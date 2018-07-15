@@ -5,9 +5,20 @@ A library for implementing financial instruments, inspired by work from SL Peyto
 ## Usage
 
 ```scala
+import java.time.{LocalDateTime, ZonedDateTime, ZoneId, Month}
+import io.github.leesq.hejin._
 import io.github.leesq.hejin.Contract._
-import io.github.leesq.hejin.Currency._
-val contract = one(TWD) and one(SGD) 
+
+val t = ZonedDateTime.of(
+  LocalDateTime.of(2018, Month.JANUARY, 20, 5, 30), 
+  ZoneId.of("Asia/Singapore")
+)
+
+// define contract from primitive combinators
+val zcb = when(at(t))(scale(konst(10))(one(SGD)))
+
+// define a contract from other contracts
+val europeanOption = when(at(t))(zcb or zero)
 ```
 
 ## Test
