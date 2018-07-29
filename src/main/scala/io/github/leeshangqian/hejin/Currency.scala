@@ -1,4 +1,4 @@
-package io.github.leesq.hejin
+package io.github.leeshangqian.hejin
 
 trait Currency
 

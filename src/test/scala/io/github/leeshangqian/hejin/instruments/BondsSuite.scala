@@ -1,13 +1,13 @@
-package io.github.leesq.hejin.instruments
+package io.github.leeshangqian.hejin.instruments
 
 import java.time.{LocalDateTime, ZonedDateTime, Month, ZoneId}
 
 import cats.Id
 import org.scalatest.{FlatSpec, Matchers}
 
-import io.github.leesq.hejin._
-import io.github.leesq.hejin.Contract._
-import io.github.leesq.hejin.instruments.Bonds._
+import io.github.leeshangqian.hejin._
+import io.github.leeshangqian.hejin.Contract._
+import io.github.leeshangqian.hejin.instruments.Bonds._
 
 class BondsSuite extends FlatSpec with Matchers {
   "zcb" should "be able to be valued" in {
