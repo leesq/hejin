@@ -1,28 +1,39 @@
 # Hejin
 
-A library for implementing financial instruments, inspired by work from SL Peyton Jones and JM Eber [[1]](https://www.microsoft.com/en-us/research/publication/composing-contracts-an-adventure-in-financial-engineering/).
+A library for implementing financial instruments, based on work from SL Peyton Jones and JM Eber [[1]](https://www.microsoft.com/en-us/research/publication/composing-contracts-an-adventure-in-financial-engineering/).
 
 ## Usage
 
 ```scala
-import java.time.{LocalDateTime, ZonedDateTime, ZoneId, Month}
-import io.github.leeshangqian.hejin._
-import io.github.leeshangqian.hejin.Contract._
+import java.time._
+import cats.effect.{IO, Sync}
+import xyz.leesq.hejin._
+import xyz.leesq.hejin.Contract._
 
 val t = ZonedDateTime.of(
   LocalDateTime.of(2018, Month.JANUARY, 20, 5, 30), 
   ZoneId.of("Asia/Singapore")
 )
 
-// define a contract from primitive combinators
-val zcb = when(at(t))(scale(konst(10))(one(SGD)))
+// Define a contract from primitive combinators
+def zeroCouponBond[F[_]: Sync](t: ZonedDateTime, x: Double, k: Currency): Contract =
+  when(at(t))(scale(konst(x))(one(k)))
 
-// define a contract from other contracts
-val europeanOption = when(at(t))(zcb or zero)
+val zcb = zeroCouponBond[IO](t, 10, SGD)
+
+// Define a contract from other contracts
+val europeanOption = when(at[IO](t))(zcb or zero)
 ```
 
 ## Test
 
+Run unit tests:
+
 ```bash
 sbt test
+```
+
+Run code formatting:
+```bash
+sbt scalafmtAll
 ```

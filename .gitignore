@@ -1,6 +1,7 @@
 *.class
 *.log
 
-target
-
-.idea
+target/
+.bloop/
+.metals/
+.idea/

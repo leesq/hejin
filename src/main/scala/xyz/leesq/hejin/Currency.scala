@@ -1,7 +1,6 @@
-package io.github.leeshangqian.hejin
+package xyz.leesq.hejin
 
 trait Currency
-
 case object CNY extends Currency
 case object HKD extends Currency
 case object SGD extends Currency
