@@ -16,10 +16,10 @@ val t = ZonedDateTime.of(
 )
 
 // Define a contract from primitive combinators
-def zeroCouponBond[F[_]: Sync](t: ZonedDateTime, x: Double, k: Currency): Contract =
+def zeroCouponBond[F[_]: Sync, T: Numeric](t: ZonedDateTime, x: T, k: Currency): Contract =
   when(at(t))(scale(konst(x))(one(k)))
 
-val zcb = zeroCouponBond[IO](t, 10, SGD)
+val zcb = zeroCouponBond[IO, Int](t, 10, SGD)
 
 // Define a contract from other contracts
 val europeanOption = when(at[IO](t))(zcb or zero)

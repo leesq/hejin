@@ -3,7 +3,7 @@ package xyz.leesq.hejin
 import java.time.ZonedDateTime
 
 import cats.Applicative
-import cats.implicits._
+import cats.syntax.all._
 import cats.effect.Sync
 
 sealed trait Contract
@@ -13,7 +13,7 @@ case class Give(c: Contract)                                     extends Contrac
 case class And(c1: Contract, c2: Contract)                       extends Contract
 case class Or(c1: Contract, c2: Contract)                        extends Contract
 case class Cond[F[_]](b: F[Boolean], c1: Contract, c2: Contract) extends Contract
-case class Scale[F[_]](o: F[Double], c: Contract)                extends Contract
+case class Scale[F[_], T: Numeric](o: F[T], c: Contract)         extends Contract
 case class When[F[_]](o: F[Boolean], c: Contract)                extends Contract
 case class Anytime[F[_]](o: F[Boolean], c: Contract)             extends Contract
 case class Until[F[_]](o: F[Boolean], c: Contract)               extends Contract
@@ -28,14 +28,13 @@ object Contract {
   val one: Currency => One       = One.apply
   val give: Contract => Contract = Give.apply
 
-  def cond[F[_]]: F[Boolean] => Contract => Contract => Contract = (Cond.apply[F] _).curried
-  def scale[F[_]]: F[Double] => Contract => Contract             = (Scale.apply[F] _).curried
-  def when[F[_]]: F[Boolean] => Contract => Contract             = (When.apply[F] _).curried
-  def anytime[F[_]]: F[Boolean] => Contract => Contract          = (Anytime.apply[F] _).curried
-  def until[F[_]]: F[Boolean] => Contract => Contract            = (Until.apply[F] _).curried
-  def konst[F[_]: Applicative, A](a: A): F[A]                    = a.pure[F]
-  def lift[F[_]: Applicative, A, B](f: A => B): F[A] => F[B]     = Applicative[F].lift(f)
-  def lift2[F[_]: Applicative, A, B, C](f: (A, B) => C): (F[A], F[B]) => F[C] =
-    Applicative[F].ap2[A, B, C](f.pure[F])
-  def at[F[_]: Sync](t: ZonedDateTime): F[Boolean] = Sync[F].delay(t.isEqual(ZonedDateTime.now()))
+  def cond[F[_]](b: F[Boolean])(c1: Contract)(c2: Contract): Contract         = Cond(b, c1, c2)
+  def scale[F[_], T: Numeric](o: F[T])(c: Contract): Contract                 = Scale(o, c)
+  def when[F[_]](b: F[Boolean])(c: Contract): Contract                        = When(b, c)
+  def anytime[F[_]](o: F[Boolean])(c: Contract): Contract                     = Anytime(o, c)
+  def until[F[_]](o: F[Boolean])(c: Contract): Contract                       = Until(o, c)
+  def konst[F[_]: Applicative, A](a: A): F[A]                                 = a.pure[F]
+  def lift[F[_]: Applicative, A, B](f: A => B): F[A] => F[B]                  = Applicative[F].lift(f)
+  def lift2[F[_]: Applicative, A, B, C](f: (A, B) => C): (F[A], F[B]) => F[C] = Applicative[F].ap2[A, B, C](f.pure[F])
+  def at[F[_]: Sync](t: ZonedDateTime): F[Boolean]                            = Sync[F].delay(t.isBefore(ZonedDateTime.now()))
 }
