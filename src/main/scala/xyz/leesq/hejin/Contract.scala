@@ -18,11 +18,10 @@ case class When[F[_]](o: F[Boolean], c: Contract)                extends Contrac
 case class Anytime[F[_]](o: F[Boolean], c: Contract)             extends Contract
 case class Until[F[_]](o: F[Boolean], c: Contract)               extends Contract
 
-object Contract {
-  implicit class ContractOps(c1: Contract) {
+object Contract:
+  implicit class ContractOps(c1: Contract):
     def and(c2: Contract): Contract = And(c1, c2)
     def or(c2: Contract): Contract  = Or(c1, c2)
-  }
 
   val zero: Contract             = Zero
   val one: Currency => One       = One.apply
@@ -37,4 +36,3 @@ object Contract {
   def lift[F[_]: Applicative, A, B](f: A => B): F[A] => F[B]                  = Applicative[F].lift(f)
   def lift2[F[_]: Applicative, A, B, C](f: (A, B) => C): (F[A], F[B]) => F[C] = Applicative[F].ap2[A, B, C](f.pure[F])
   def at[F[_]: Sync](t: ZonedDateTime): F[Boolean]                            = Sync[F].delay(t.isBefore(ZonedDateTime.now()))
-}

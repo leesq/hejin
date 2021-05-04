@@ -1,7 +1,7 @@
 package xyz.leesq.hejin
 
-trait Currency
-case object CNY extends Currency
-case object HKD extends Currency
-case object SGD extends Currency
-case object TWD extends Currency
+enum Currency(val code: String):
+  case CNY extends Currency("CNY")
+  case HKD extends Currency("HKD")
+  case SGD extends Currency("SGD")
+  case THB extends Currency("THB")
